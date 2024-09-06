@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Memoreal_Prototype</string>
+    <string name="memorealTitle">Memoreal</string>
+    <!--Memoreal Login and Sign Up page-->
+    <string name="signup">Sign up Now</string>
+    <string name="termsAndConditions">By signing up, you agree to our Terms, Privacy Policy, and Cookie Use. Memoreal may use your contact information, including your email address and phone number for purposes outlined in our Privacy Policy. Learn more.</string>
+    <string name="signUp">Sign up to Memoreal</string>
+    <string name="skip">>| Skip for Now</string>
+    <string name="accountDetails">Account Details</string>
+    <string name="personalDetails">Personal Details</string>
+    <!--Memoreal Home Page-->
+    <!--Memoreal Create Obituary Section-->
+</resources>

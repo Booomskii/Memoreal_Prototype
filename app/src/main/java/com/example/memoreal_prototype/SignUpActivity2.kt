@@ -31,7 +31,7 @@ import java.util.Calendar
 class SignUpActivity2 : AppCompatActivity() {
 
     private lateinit var uploadImg: ImageView
-    private lateinit var imageUri: Uri
+    private var imageUri: Uri? = null
     private lateinit var image: String
     private lateinit var viewModel: UserViewModel
 
@@ -113,9 +113,10 @@ class SignUpActivity2 : AppCompatActivity() {
             val mi = middleInitial.text.toString()
             val contact = contactNum.text.toString()
             val bdate = birthDate.text.toString()
+            val image = imageUri?.toString() ?: ""
 
             Log.d("SignUpActivity2", "Starting validation")
-            if (inputValidator(fname, lname, mi, bdate, contact/*, image*/)) {
+            if (inputValidator(fname, lname, mi, bdate, contact, image)) {
                 Log.d("SignUpActivity2", "Input validated")
                 lifecycleScope.launch {
                     try {
@@ -136,7 +137,7 @@ class SignUpActivity2 : AppCompatActivity() {
                                     contact,
                                     existingUser.email,
                                     bdate,
-                                    null
+                                    image
                                 )
                             )
                             Log.d("SignUpActivity2", "User updated successfully")
@@ -171,7 +172,8 @@ class SignUpActivity2 : AppCompatActivity() {
         }
     }
 
-    private fun inputValidator(fname:String?, lname:String?, mi:String?, bdate:String?, contact:String?/*, image:String*/): Boolean {
+    private fun inputValidator(fname:String?, lname:String?, mi:String?, bdate:String?,
+                               contact:String?, image:String?): Boolean {
         return when {
             fname.isNullOrEmpty() -> {
                 Toast.makeText(
@@ -213,14 +215,14 @@ class SignUpActivity2 : AppCompatActivity() {
                 ).show()
                 return false
             }
-            /*imageUri == null -> {
+            imageUri == null -> {
                 Toast.makeText(
                     this@SignUpActivity2,
                     "Please upload an image",
                     Toast.LENGTH_SHORT
                 ).show()
                 return false
-            }*/
+            }
             else -> {
                 return true
             }

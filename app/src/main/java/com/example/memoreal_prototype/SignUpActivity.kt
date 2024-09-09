@@ -14,6 +14,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.memoreal_prototype.db.User
 import com.example.memoreal_prototype.db.MemorealDatabase
 import com.example.memoreal_prototype.db.UserDao
@@ -22,10 +24,14 @@ import kotlinx.coroutines.launch
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var emailAdd: EditText
-    private lateinit var username:EditText
+    private lateinit var username: EditText
+    private lateinit var password: EditText
+    private lateinit var conpassword: EditText
     private lateinit var sf:SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var viewModel:UserViewModel
+    private lateinit var userRecyclerView: RecyclerView
+    /*private lateinit var adapter: UserRecyclerViewAdapter*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,15 +42,18 @@ class SignUpActivity : AppCompatActivity() {
         val createAcc = findViewById<Button>(R.id.btnCreateAcc)
         emailAdd = findViewById(R.id.editTextEmailAddress)
         username = findViewById(R.id.editTextUsername)
-        val password = findViewById<EditText>(R.id.editTextPassword)
-        val conpassword = findViewById<EditText>(R.id.editTextConfirmPassword)
+        password = findViewById<EditText>(R.id.editTextPassword)
+        conpassword = findViewById<EditText>(R.id.editTextConfirmPassword)
         val agree = findViewById<CheckBox>(R.id.checkBoxTerms)
         sf = getSharedPreferences("signup_sf",MODE_PRIVATE)
         editor = sf.edit()
+        userRecyclerView = findViewById(R.id.rv_user)
 
         val dao = MemorealDatabase.getInstance(application).userDao()
         val factory = UserViewModelFactory(dao)
         viewModel = ViewModelProvider(this,factory).get(UserViewModel::class.java)
+
+        /*initRecyclerView()*/
 
         toLogin.setOnClickListener {
             val intent = Intent(this,MainActivity::class.java)
@@ -68,8 +77,8 @@ class SignUpActivity : AppCompatActivity() {
             )*/
             if (inputValidator(email, uname, pword, conpword, agree)){
                 lifecycleScope.launch {
-                    val checkUName = dao.duplicateUser1(uname)
-                    val checkEmail = dao.duplicateUser2(email)
+                    val checkUName = dao.checkUsername(uname)
+                    val checkEmail = dao.checkEmail(email)
                     if (checkUName) {
                         Toast.makeText(
                             this@SignUpActivity,
@@ -89,8 +98,7 @@ class SignUpActivity : AppCompatActivity() {
                         val intent = Intent(applicationContext, SignUpActivity2::class.java)
                         intent.putExtra("username", uname)
                         startActivity(intent)
-                        val textFields = listOf(emailAdd, username, password, conpassword)
-                        textFields.forEach { it.text.clear() }
+                        clearInput()
                     }
                 }
             }
@@ -183,6 +191,25 @@ class SignUpActivity : AppCompatActivity() {
     private fun Char.isSpecialChar(): Boolean {
         return !this.isLetterOrDigit() && !this.isWhitespace()
     }
+
+    private fun clearInput(){
+        val textFields = listOf(emailAdd, username, password, conpassword)
+        textFields.forEach { it.text.clear() }
+    }
+
+    /*private fun initRecyclerView(){
+        userRecyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = UserRecyclerViewAdapter()
+        userRecyclerView.adapter = adapter
+        displayUsersList()
+    }*/
+
+    /*private fun displayUsersList(){
+        viewModel.users.observe(this){
+            adapter.setList(it)
+            adapter.notifyDataSetChanged()
+        }
+    }*/
 
     override fun onPause(){
         super.onPause()

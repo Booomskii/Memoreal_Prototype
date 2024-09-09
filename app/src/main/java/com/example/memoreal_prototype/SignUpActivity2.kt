@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -113,27 +114,47 @@ class SignUpActivity2 : AppCompatActivity() {
             val contact = contactNum.text.toString()
             val bdate = birthDate.text.toString()
 
+            Log.d("SignUpActivity2", "Starting validation")
             if (inputValidator(fname, lname, mi, bdate, contact/*, image*/)) {
+                Log.d("SignUpActivity2", "Input validated")
                 lifecycleScope.launch {
-                    val existingUser = dao.getUserByUsername(username.toString())
-                    existingUser?.let {
-                        it.firstName = fname
-                        it.lastName = lname
-                        it.mi = mi
-                        it.contactNumber = contact.toInt()
-                        it.birthDate = bdate.toLong()
-                        it.picture = null
-                        viewModel.updateUser(it)
+                    try {
+                        Log.d("SignUpActivity2", "Attempting to fetch user by username: $username")
+                        val existingUser = dao.getUserByUsername(username!!.toString())
+
+                        if (existingUser != null) {
+                            Log.d("SignUpActivity2", "User found, updating: ${existingUser.username}")
+
+                            viewModel.updateUser(
+                                User(
+                                    existingUser.userID,
+                                    fname,
+                                    lname,
+                                    mi,
+                                    username,
+                                    existingUser.password,
+                                    contact,
+                                    existingUser.email,
+                                    bdate,
+                                    null
+                                )
+                            )
+                            Log.d("SignUpActivity2", "User updated successfully")
+                        } else {
+                            Log.d("SignUpActivity2", "User not found!")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("SignUpActivity2", "Error during update: ${e.message}")
                     }
                 }
                 val intent = Intent(applicationContext, HomePageActivity::class.java)
+                Log.d("SignUpActivity2", "Navigating to HomePageActivity")
                 startActivity(intent)
-            }
-            else
-            {
+            } else {
+                Log.d("SignUpActivity2", "Input validation failed")
                 Toast.makeText(
                     this@SignUpActivity2,
-                    "There's something wrong motherfucker, solbari sa",
+                    "There's something wrong",
                     Toast.LENGTH_SHORT
                 ).show()
             }

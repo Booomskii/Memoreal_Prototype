@@ -23,11 +23,11 @@ data class User(
     @ColumnInfo(name="password")
     var password:String,
     @ColumnInfo(name="contact_number")
-    var contactNumber:Int? = null,
+    var contactNumber:String? = null,
     @ColumnInfo(name="email")
     var email:String,
     @ColumnInfo(name="birthdate")
-    var birthDate:Long? = null,
+    var birthDate:String? = null,
     @ColumnInfo(name="picture")
     var picture:String? = null
 )

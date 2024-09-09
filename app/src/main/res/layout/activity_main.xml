@@ -72,20 +72,6 @@
         app:layout_constraintTop_toBottomOf="@+id/textViewMemoreal"
         app:layout_constraintVertical_bias="0.076" />
 
-    <Button
-        android:id="@+id/btnOffers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View Offers"
-        android:textSize="20sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.937"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.976" />
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="219dp"

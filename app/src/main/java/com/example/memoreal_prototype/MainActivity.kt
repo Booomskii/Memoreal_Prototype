@@ -13,6 +13,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.example.memoreal_prototype.db.MemorealDatabase
+import com.example.memoreal_prototype.db.UserViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,51 +29,28 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Log.i("MYTAG","MainActivity:OnCreate")
             val greetingTextView = findViewById<TextView>(R.id.textViewMemoreal)
-            val inputField = findViewById<EditText>(R.id.editTextUname)
+            val username = findViewById<EditText>(R.id.editTextUname)
             val password = findViewById<EditText>(R.id.editTextPword)
             val submitButton = findViewById<Button>(R.id.btnSubmit)
-            val offersButton =  findViewById<Button>(R.id.btnOffers)
             val toSignUp = findViewById<TextView>(R.id.textViewSignUp)
             var enteredUsername = ""
             var pword = ""
             submitButton.setOnClickListener {
-                enteredUsername = inputField.text.toString()
+                enteredUsername = username.text.toString()
                 pword = password.text.toString()
 
-                if (enteredUsername == "") {
-                    offersButton.visibility = INVISIBLE
-                    greetingTextView.text = ""
-                    Toast.makeText(
-                        this@MainActivity,  // Context
-                        "Please enter your Email!",  // Text
-                        Toast.LENGTH_SHORT // Duration
-                    ).show()
-                }else if (pword == ""){
-                    Toast.makeText(
-                        this@MainActivity,  // Context
-                        "Please enter your Password!",  // Text
-                        Toast.LENGTH_SHORT // Duration
-                    ).show()
-                }else{
-                    val message = "Welcome $enteredUsername"
-                    greetingTextView.text = message
-                    inputField.text.clear()
-                    offersButton.visibility = VISIBLE
+                lifecycleScope.launch {
+                    if (loginAuthenticator(enteredUsername, pword)){
+                        val intent = Intent(applicationContext,HomePageActivity::class.java)
+                        startActivity(intent)
+                    }
                 }
             }
-
-        offersButton.setOnClickListener {
-            val intent = Intent(this,SecondActivity::class.java)
-            intent.putExtra("USER",enteredUsername)
-            startActivity(intent)
-        }
 
         toSignUp.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
-
-
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -75,7 +59,52 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
+    private suspend fun loginAuthenticator(username: String, password: String): Boolean {
+        val dao = MemorealDatabase.getInstance(application).userDao()
+
+        return when {
+            username.isEmpty() -> {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Please enter your Email!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                false
+            }
+            password.isEmpty() -> {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Please enter your Password!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                false
+            }
+            else -> {
+                val user = withContext(Dispatchers.IO) {
+                    dao.getUserByUsername(username)
+                }
+                if (user != null && user.password == password) {
+                    true
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Invalid username or password",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    false
+                }
+            }
+        }
+    }
+
+
+    /*override fun onStart() {
         super.onStart()
         Log.i("MYTAG","MainActivity:OnStart")
     }
@@ -103,5 +132,5 @@ class MainActivity : AppCompatActivity() {
     override fun onRestart(){
         super.onRestart()
         Log.i("MYTAG","MainActivity:OnRestart")
-    }
+    }*/
 }

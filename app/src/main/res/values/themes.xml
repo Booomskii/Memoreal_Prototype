@@ -17,5 +17,9 @@
         <item name="android:fontFamily">@font/poppins_medium</item>
     </style>
 
+    <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/memo_orange</item>
+    </style>
+
     <style name="Theme.Memoreal_Prototype" parent="Base.Theme.Memoreal_Prototype" />
 </resources>

@@ -8,6 +8,13 @@
     <string name="skip">>| Skip for Now</string>
     <string name="accountDetails">Account Details</string>
     <string name="personalDetails">Personal Details</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!--Memoreal Home Page-->
+    <string name="welcome">Welcome!</string>
+    <string name="userPlaceholder">User</string>
+    <string name="searchBarHint">Search here</string>
+    <string name="createObituaryButton">CREATE OBITUARY</string>">
+    <string name="browse">BROWSE</string>
     <!--Memoreal Create Obituary Section-->
 </resources>

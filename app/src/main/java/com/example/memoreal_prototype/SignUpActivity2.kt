@@ -15,6 +15,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -35,9 +36,8 @@ class SignUpActivity2 : AppCompatActivity() {
     private lateinit var image: String
     private lateinit var viewModel: UserViewModel
 
-    private val pickImageLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        uri: Uri? ->
         if (uri != null) {
             uploadImg.setImageURI(uri)
             imageUri = uri
@@ -51,11 +51,9 @@ class SignUpActivity2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up2)
 
-        val text = findViewById<TextView>(R.id.textViewPersonalInfo)
         val username = intent.getStringExtra("username")
         val skip = findViewById<TextView>(R.id.textViewSkip)
         val cont = findViewById<Button>(R.id.btnContinue)
-        val back = findViewById<ImageView>(R.id.imgBack)
         val firstName = findViewById<EditText>(R.id.editTextFirstName)
         val lastName = findViewById<EditText>(R.id.editTextLastName)
         val middleInitial = findViewById<EditText>(R.id.editTextMI)
@@ -148,6 +146,7 @@ class SignUpActivity2 : AppCompatActivity() {
                         Log.e("SignUpActivity2", "Error during update: ${e.message}")
                     }
                 }
+                loginSuccess()
                 val intent = Intent(applicationContext, HomePageActivity::class.java)
                 Log.d("SignUpActivity2", "Navigating to HomePageActivity")
                 startActivity(intent)
@@ -162,7 +161,17 @@ class SignUpActivity2 : AppCompatActivity() {
         }
 
         skip.setOnClickListener{
-            text.text = username.toString()
+            AlertDialog.Builder(this)
+                .setTitle("Logout")
+                .setMessage("Are you sure you want to skip entering your Personal Information?")
+                .setPositiveButton("Yes") { _, _ ->
+                    loginSuccess()
+                    val intent = Intent(this, HomePageActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+                .setNegativeButton("No", null)
+                .show()
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -227,6 +236,14 @@ class SignUpActivity2 : AppCompatActivity() {
                 return true
             }
         }
+    }
+
+    private fun loginSuccess(){
+        val sharedPreferences = getSharedPreferences("userSession", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("isLoggedIn", true)
+        editor.putString("username", intent.getStringExtra("username"))
+        editor.apply()
     }
 
     override fun onBackPressed() {

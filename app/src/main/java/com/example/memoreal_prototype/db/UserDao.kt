@@ -39,3 +39,26 @@ interface UserDao {
     @Query("DELETE FROM sqlite_sequence WHERE name = 'user_table'")
     suspend fun resetPrimaryKey()
 }
+
+@Dao
+interface ObituaryDao{
+
+    @Insert (onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertObituary(obituary: Obituary): Long
+
+    @Update (onConflict = OnConflictStrategy.ABORT)
+    suspend fun updateObituary(obituary: Obituary): Int
+
+    @Delete
+    suspend fun deleteObituary(obituary: Obituary): Int
+
+    @Query("SELECT * FROM obituary_table")
+    fun getAllObituaries(): LiveData<List<User>>
+
+    //for test
+    @Query("DELETE FROM obituary_table")
+    suspend fun deleteAllUsers()
+    //to reset the primary key
+    @Query("DELETE FROM sqlite_sequence WHERE name = 'obituary_table'")
+    suspend fun resetPrimaryKey()
+}

@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         Log.i("MYTAG","MainActivity:OnCreate")
-            val greetingTextView = findViewById<TextView>(R.id.textViewMemoreal)
             val username = findViewById<EditText>(R.id.editTextUname)
             val password = findViewById<EditText>(R.id.editTextPword)
             val submitButton = findViewById<Button>(R.id.btnSubmit)
@@ -41,6 +40,12 @@ class MainActivity : AppCompatActivity() {
 
                 lifecycleScope.launch {
                     if (loginAuthenticator(enteredUsername, pword)){
+                        val sharedPreferences = getSharedPreferences("userSession", MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.putBoolean("isLoggedIn", true)
+                        editor.putString("username", enteredUsername)
+                        editor.apply()
+
                         val intent = Intent(applicationContext,HomePageActivity::class.java)
                         startActivity(intent)
                     }

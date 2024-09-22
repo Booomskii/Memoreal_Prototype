@@ -10,6 +10,7 @@ abstract class UserSession: AppCompatActivity() {
 
         val sharedPreferences = getSharedPreferences("userSession", MODE_PRIVATE)
         val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        val isGuestUser = sharedPreferences.getBoolean("isGuestUser", false)
         val username = sharedPreferences.getString("username", "")
 
         if (!isLoggedIn) {

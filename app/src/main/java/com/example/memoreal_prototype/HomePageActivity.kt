@@ -2,6 +2,7 @@ package com.example.memoreal_prototype
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -41,32 +42,44 @@ class HomePageActivity : UserSession() {
         }
     }
 
-    private fun replaceFragment(fragment: Fragment){
+    fun replaceFragment(fragment: Fragment){
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame_layout,fragment)
         fragmentTransaction.commit()
     }
 
-    override fun onBackPressed() {
-        // Show a dialog to confirm logout
-        AlertDialog.Builder(this)
-            .setTitle("Logout")
-            .setMessage("Are you sure you want to logout?")
-            .setPositiveButton("Yes") { _, _ ->
-                // Clear the login session
-                val sharedPreferences = getSharedPreferences("userSession", MODE_PRIVATE)
-                val editor = sharedPreferences.edit()
-                editor.clear() // Clear all session data
-                editor.apply()
-
-                // Go back to login screen
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()  // Close HomePageActivity
-            }
-            .setNegativeButton("No", null)
-            .show()
+    fun showBottomNavigation() {
+        binding.bottomNavigationView.visibility = View.VISIBLE
     }
 
+    override fun onBackPressed() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.frame_layout)
+        if (currentFragment is Home) {
+            AlertDialog.Builder(this)
+                .setTitle("Logout")
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("Yes") { _, _ ->
+                    val sharedPreferences = getSharedPreferences("userSession", MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.clear()
+                    editor.apply()
+
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+                .setNegativeButton("No", null)
+                .show()
+        }  else if (currentFragment is Explore || currentFragment is MyObituaries || currentFragment is Profile) {
+            val fragmentTransaction = supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.frame_layout, Home())
+            fragmentTransaction.addToBackStack(null)
+            /*transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)*/
+            fragmentTransaction.commit()
+            binding.bottomNavigationView.selectedItemId = R.id.nav_home
+        } else {
+            super.onBackPressed()
+        }
+    }
 }

@@ -12,5 +12,11 @@
     <color name="memo_light_orange">#FFBD59</color>
     <!--HomePage Colors-->
     <color name="addProfilePic">#563A21</color>
-    <color name="grey">#757575</color>">
+    <color name="grey">#757575</color>
+    <color name="lightgray">#E0E0E0</color>
+    <!--Create Obituary Colors-->
+    <color name="offwhite">#F5F5F5</color>
+    <color name="transparent">#00000000</color>
+    <color name="green">#00FF00</color>
+    <color name="lightbrown">#ffe4c4</color>
 </resources>

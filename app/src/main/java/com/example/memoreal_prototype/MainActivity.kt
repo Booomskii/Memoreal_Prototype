@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
             val username = findViewById<EditText>(R.id.editTextUname)
             val password = findViewById<EditText>(R.id.editTextPword)
             val submitButton = findViewById<Button>(R.id.btnSubmit)
+            val loginGuest = findViewById<Button>(R.id.btnLoginGuest)
             val toSignUp = findViewById<TextView>(R.id.textViewSignUp)
             var enteredUsername = ""
             var pword = ""
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
                         val sharedPreferences = getSharedPreferences("userSession", MODE_PRIVATE)
                         val editor = sharedPreferences.edit()
                         editor.putBoolean("isLoggedIn", true)
+                        editor.putBoolean("isGuestUser", false)
                         editor.putString("username", enteredUsername)
                         editor.apply()
 
@@ -50,6 +52,16 @@ class MainActivity : AppCompatActivity() {
                         startActivity(intent)
                     }
                 }
+            }
+
+            loginGuest.setOnClickListener {
+                val sharedPreferences = getSharedPreferences("userSession", MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.putBoolean("isLoggedIn", true)
+                editor.putBoolean("isGuestUser", true)
+                editor.apply()
+                val intent = Intent(applicationContext,HomePageActivity::class.java)
+                startActivity(intent)
             }
 
         toSignUp.setOnClickListener {

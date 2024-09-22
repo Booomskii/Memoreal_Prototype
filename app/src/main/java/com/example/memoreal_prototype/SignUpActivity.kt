@@ -47,7 +47,7 @@ class SignUpActivity : AppCompatActivity() {
         val agree = findViewById<CheckBox>(R.id.checkBoxTerms)
         sf = getSharedPreferences("signup_sf",MODE_PRIVATE)
         editor = sf.edit()
-        userRecyclerView = findViewById(R.id.rv_user)
+        /*userRecyclerView = findViewById(R.id.rv_user)*/
 
         val dao = MemorealDatabase.getInstance(application).userDao()
         val factory = UserViewModelFactory(dao)

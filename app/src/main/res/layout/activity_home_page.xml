@@ -24,6 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/layout_background"
+        android:adjustViewBounds="true"
         app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"
         app:itemIconSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"

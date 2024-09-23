@@ -18,5 +18,6 @@
     <color name="offwhite">#F5F5F5</color>
     <color name="transparent">#00000000</color>
     <color name="green">#00FF00</color>
-    <color name="lightbrown">#ffe4c4</color>
+    <color name="lightbrown">#FFE4C4</color>
+    <color name="yellow">#F7EA5F</color>
 </resources>

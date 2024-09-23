@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 
-class CreateObituaryStep2_2 : Fragment() {
+class CreateObituaryStep5 : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,10 +18,12 @@ class CreateObituaryStep2_2 : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_create_obituary_step2_2, container, false)
+        val view = inflater.inflate(R.layout.fragment_create_obituary_step5, container, false)
         val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
         val backButton = toolbar.findViewById<ImageView>(R.id.backButton)
-        val proceedButton = view.findViewById<Button>(R.id.btnProceed2)
+        val nextButton = view.findViewById<Button>(R.id.btnNext)
+        val prevButton = view.findViewById<Button>(R.id.btnPrev)
+
 
         backButton.setOnClickListener {
             (activity as HomePageActivity).supportFragmentManager.beginTransaction()
@@ -30,11 +32,18 @@ class CreateObituaryStep2_2 : Fragment() {
                 .commit()
         }
 
-        proceedButton.setOnClickListener {
+        nextButton.setOnClickListener {
             (activity as HomePageActivity).supportFragmentManager.beginTransaction()
-                .replace(R.id.frame_layout, CreateObituaryStep3())
+                .replace(R.id.frame_layout, CreateObituaryStep6())
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_out_left, R.anim.slide_out_right)
-                .addToBackStack("CreateObituaryStep2_2")
+                .addToBackStack("CreateObituaryStep4")
+                .commit()
+        }
+
+        prevButton.setOnClickListener {
+            (activity as HomePageActivity).supportFragmentManager.beginTransaction()
+                .replace(R.id.frame_layout, CreateObituaryStep4())
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_out_left, R.anim.slide_out_right)
                 .commit()
         }
 

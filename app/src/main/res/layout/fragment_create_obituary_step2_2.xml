@@ -3,14 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:backgroundTint="@color/white"
         android:background="@color/white"
-        tools:context=".CreateObituaryStep2">
+        tools:context=".CreateObituaryStep2_2">
 
         <include
             layout="@layout/create_obituary_toolbar"
@@ -103,7 +104,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal|top"
                 android:text="@string/temp"
-                android:textAllCaps="false"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

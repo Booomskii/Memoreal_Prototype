@@ -34,7 +34,7 @@ class CreateObituaryStep2 : Fragment() {
             (activity as HomePageActivity).supportFragmentManager.beginTransaction()
                 .replace(R.id.frame_layout, CreateObituaryStep2_2())
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_out_left, R.anim.slide_out_right)
-                .addToBackStack(null)
+                .addToBackStack("CreateObituaryStep2")
                 .commit()
         }
 

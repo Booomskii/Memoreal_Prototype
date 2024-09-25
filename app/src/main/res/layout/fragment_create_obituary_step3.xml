@@ -179,12 +179,12 @@
 
             <Button
                 android:id="@+id/btnNext"
-                android:layout_width="120dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/yellow"
                 android:text="@string/next"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.885"

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import org.w3c.dom.Text
 
 @Entity(
     tableName = "user_table",
@@ -48,7 +49,7 @@ data class Obituary(
     @ColumnInfo(name="user_id")
     var userID:Int,
     @ColumnInfo(name="biography")
-    var biography:String,
+    var biography:Text,
     @ColumnInfo(name="obituary_name")
     var obituaryName:String,
     @ColumnInfo(name="date_of_birth")
@@ -68,6 +69,29 @@ data class Obituary(
     @ColumnInfo(name="last_modified")
     var lastModified: Long
 )
+
+@Entity(
+    tableName = "family_table",
+    foreignKeys = [
+        ForeignKey(entity = User::class, parentColumns = ["userID"], childColumns = ["userID"])
+    ]
+)
+data class Family(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name="family_id")
+    var familyID:Int,
+    @ColumnInfo(name="user_id")
+    var userID: Int,
+    @ColumnInfo(name="f_first_name")
+    var fFirstName:String,
+    @ColumnInfo(name="f_last_name")
+    var fLastName:String,
+    @ColumnInfo(name="f_mi")
+    var fMi:String,
+    @ColumnInfo(name="f_role")
+    var fRole:String
+)
+
 @Entity(
     tableName = "payment_table",
     foreignKeys = [

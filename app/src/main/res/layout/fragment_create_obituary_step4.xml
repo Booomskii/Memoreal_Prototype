@@ -108,7 +108,7 @@
                     app:layout_constraintVertical_bias="0.339" />
 
                 <ImageView
-                    android:id="@+id/imageView9"
+                    android:id="@+id/btnAddMedia"
                     android:layout_width="75dp"
                     android:layout_height="75dp"
                     android:background="@drawable/bordered_rectangle"
@@ -147,7 +147,7 @@
                     app:layout_constraintVertical_bias="0.546" />
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/btnAddFamily"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:backgroundTint="@color/memo_orange"
@@ -167,12 +167,12 @@
 
             <Button
                 android:id="@+id/btnPrev"
-                android:layout_width="120dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/memo_orange"
                 android:text="@string/previous"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.114"
@@ -182,12 +182,12 @@
 
             <Button
                 android:id="@+id/btnNext"
-                android:layout_width="120dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/yellow"
                 android:text="@string/next"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.885"

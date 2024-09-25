@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 
 class CreateObituaryStep4 : Fragment() {
@@ -23,6 +24,9 @@ class CreateObituaryStep4 : Fragment() {
         val backButton = toolbar.findViewById<ImageView>(R.id.backButton)
         val nextButton = view.findViewById<Button>(R.id.btnNext)
         val prevButton = view.findViewById<Button>(R.id.btnPrev)
+        val obitText = view.findViewById<EditText>(R.id.etObituaryText)
+        val keyEvents = view.findViewById<EditText>(R.id.etKeyEvents)
+        val addMedia = view.findViewById<ImageView>(R.id.btnAddMedia)
 
 
         backButton.setOnClickListener {

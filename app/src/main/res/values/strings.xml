@@ -36,7 +36,7 @@
     <string name="step1">Step 1 of 8: Choose a Plan</string>
     <string name="oneTime">One-time Fee for a Lifetime Memorial</string>
     <string name="memorialCreationFee">₱99</string>
-    <string name="memorialCreationFeeDec">₱99.00</string>
+    <string name="memorialCreationFeeDec">99.00</string>
     <string name="memorialCreation">Memorial Creation Fee</string>
     <string name="includes">Includes:</string>
     <string name="memorialCreation_1">* Basic Memorial Page</string>
@@ -46,7 +46,7 @@
     <!--Basic Plan-->
     <string name="basic"><b>Basic Plan</b></string>
     <string name="basicFee">₱199</string>
-    <string name="basicFeeDec">₱199.00</string>
+    <string name="basicFeeDec">199.00</string>
     <string name="perMonth"><i>per month</i></string>
     <string name="customizable">* Customizable Memorial Page</string>
     <string name="basic_1">* Virtual Guestbook <i>(up to 250 entries)</i></string>
@@ -57,7 +57,7 @@
     <!--Premium Plan-->
     <string name="premium"><b>Premium Plan</b></string>
     <string name="premiumFee">₱399</string>
-    <string name="premiumFeeDec">₱399.00</string>
+    <string name="premiumFeeDec">399.00</string>
     <string name="premium_1">* Virtual Guestbook <i>(up to 500 entries)</i></string>
     <string name="premium_2">* Virtual Candles <i>(up to 200)</i></string>
     <string name="premium_3">* Virtual Flowers <i>(up to 200)</i></string>
@@ -69,7 +69,7 @@
     <!--Lifetime Plan-->
     <string name="lifetime"><b>Lifetime Plan</b></string>
     <string name="lifetimeFee">₱999</string>
-    <string name="lifetimeFeeDec">₱999.00</string>
+    <string name="lifetimeFeeDec">999.00</string>
     <string name="noRecurring">* No recurring costs</string>
     <string name="lifetime_1">* Virtual Guestbook <i>(unlimited entries)</i></string>
     <string name="lifetime_2">* Virtual Candles <i>(unlimited)</i></string>
@@ -147,4 +147,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="temp">temp</string>
     <string name="zero">₱0.00</string>
+    <string name="noPlan">No Plan</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.memoreal_prototype.db
+package com.example.memoreal_prototype.room_db
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

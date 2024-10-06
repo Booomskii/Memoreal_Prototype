@@ -1,10 +1,12 @@
 package com.example.memoreal_prototype
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -41,6 +43,7 @@ class CreateObituaryStep3 : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,38 +62,56 @@ class CreateObituaryStep3 : Fragment() {
             pickImageLauncher.launch("image/*")
         }
 
-        dateBirthET.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            val year = calendar.get(Calendar.YEAR)
-            val month = calendar.get(Calendar.MONTH)
-            val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-            val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, selectedYear, selectedMonth, selectedDay ->
-                    // Update the editText with the selected date
-                    dateBirthET.setText(String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear))
-                },
-                year, month, day
-            )
-            datePickerDialog.show()
+        dateBirthET.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                // Check if the touch was on the drawableEnd (right side of the EditText)
+                val drawableEnd = dateBirthET.compoundDrawables[2] // Index 2 is for drawableEnd
+                drawableEnd?.let {
+                    if (event.rawX >= (dateBirthET.right - dateBirthET.compoundDrawables[2].bounds.width())) {
+                        val calendar = Calendar.getInstance()
+                        val year = calendar.get(Calendar.YEAR)
+                        val month = calendar.get(Calendar.MONTH)
+                        val day = calendar.get(Calendar.DAY_OF_MONTH)
+                        val datePickerDialog = DatePickerDialog(
+                            requireContext(),
+                            { _, selectedYear, selectedMonth, selectedDay ->
+                                dateBirthET.setText(String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear))
+                            },
+                            year, month, day
+                        )
+                        datePickerDialog.show()
+                        return@setOnTouchListener true // Mark the event as handled
+                    }
+                }
+            }
+            v.performClick() // Call performClick for accessibility
+            false
         }
 
-        datePassingET.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            val year = calendar.get(Calendar.YEAR)
-            val month = calendar.get(Calendar.MONTH)
-            val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-            val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, selectedYear, selectedMonth, selectedDay ->
-                    // Update the editText with the selected date
-                    datePassingET.setText(String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear))
-                },
-                year, month, day
-            )
-            datePickerDialog.show()
+        datePassingET.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                // Check if the touch was on the drawableEnd (right side of the EditText)
+                val drawableEnd = datePassingET.compoundDrawables[2] // Index 2 is for drawableEnd
+                drawableEnd?.let {
+                    if (event.rawX >= (datePassingET.right - datePassingET.compoundDrawables[2].bounds.width())) {
+                        val calendar = Calendar.getInstance()
+                        val year = calendar.get(Calendar.YEAR)
+                        val month = calendar.get(Calendar.MONTH)
+                        val day = calendar.get(Calendar.DAY_OF_MONTH)
+                        val datePickerDialog = DatePickerDialog(
+                            requireContext(),
+                            { _, selectedYear, selectedMonth, selectedDay ->
+                                datePassingET.setText(String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear))
+                            },
+                            year, month, day
+                        )
+                        datePickerDialog.show()
+                        return@setOnTouchListener true // Mark the event as handled
+                    }
+                }
+            }
+            v.performClick() // Call performClick for accessibility
+            false
         }
 
         backButton.setOnClickListener {
@@ -105,11 +126,12 @@ class CreateObituaryStep3 : Fragment() {
             val dateBirthStr = dateBirthET.text.toString()
             val datePassingStr = datePassingET.text.toString()
             val biography = biographyET.text.toString()
+            val image = imageUri.toString()
 
-            if (inputValidator(fullName, dateBirthStr, datePassingStr, biography)){
+            if (inputValidator(fullName, dateBirthStr, datePassingStr, biography, image)){
                 val dateBirth = parseDate(dateBirthET.text.toString(),"Date of birth")
                 val datePassing = parseDate(datePassingET.text.toString(), "Date of passing")
-                if (dateValidator(dateBirth!!, datePassing!!)){
+                if (!dateValidator(dateBirth!!, datePassing!!)){
                     Toast.makeText(
                         requireContext(),
                         "Date of Birth cannot be greater than Date of Passing",
@@ -130,8 +152,7 @@ class CreateObituaryStep3 : Fragment() {
     }
 
     private fun inputValidator(fullName:String, dateBirth: String, datePassing: String,
-                               biography:
-    String) : Boolean{
+                               biography: String, imageUri: String) : Boolean{
         return when {
             fullName.isNullOrEmpty() -> {
                 Toast.makeText(requireContext(),
@@ -159,6 +180,14 @@ class CreateObituaryStep3 : Fragment() {
                 Toast.makeText(
                     requireContext(),
                     "Enter the person's biography",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return false
+            }
+            imageUri == null -> {
+                Toast.makeText(
+                    requireContext(),
+                    "Please upload an image",
                     Toast.LENGTH_SHORT
                 ).show()
                 return false

@@ -3,6 +3,7 @@ package com.example.memoreal_prototype
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -13,14 +14,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.memoreal_prototype.db.User
-import com.example.memoreal_prototype.db.MemorealDatabase
-import com.example.memoreal_prototype.db.UserDao
-import com.example.memoreal_prototype.db.UserViewModelFactory
-import kotlinx.coroutines.launch
+import com.example.memoreal_prototype.room_db.MemorealDatabase
+import com.example.memoreal_prototype.room_db.UserViewModelFactory
+import com.google.gson.Gson
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okio.IOException
+import org.json.JSONObject
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var emailAdd: EditText
@@ -30,8 +35,10 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var sf:SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var viewModel:UserViewModel
-    private lateinit var userRecyclerView: RecyclerView
+    /*private lateinit var userRecyclerView: RecyclerView*/
     /*private lateinit var adapter: UserRecyclerViewAdapter*/
+    val client = UserSession.client
+    val baseUrl = UserSession.baseUrl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,30 +82,30 @@ class SignUpActivity : AppCompatActivity() {
                     emailAdd.text.toString(),
                 )
             )*/
-            if (inputValidator(email, uname, pword, conpword, agree)){
-                lifecycleScope.launch {
-                    val checkUName = dao.checkUsername(uname)
-                    val checkEmail = dao.checkEmail(email)
-                    if (checkUName) {
-                        Toast.makeText(
-                            this@SignUpActivity,
-                            "User already exists",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else if (checkEmail) {
-                        Toast.makeText(
-                            this@SignUpActivity,
-                            "Email is already taken",
-                            Toast.LENGTH_SHORT
-                        ).show()
+            if (inputValidator(email, uname, pword, conpword, agree)) {
+                val user = com.example.memoreal_prototype.models.User(
+                    0, null, null, null, uname, null, email,
+                    null, null, "" // Leave hashedPassword empty since it's handled on the server
+                )
+
+                checkUserAvailability(uname, email) { isAvailable ->
+                    if (!isAvailable) {
+                        runOnUiThread {
+                            Toast.makeText(
+                                this,
+                                "Username or Email already exists",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     } else {
-                        val user = User(0, null, null, null, uname, pword, null, email,
-                            null, null)
-                        viewModel.insertUser(user)
+                        // Register the user with plain text password
+                        registerUser(user, pword)  // Pass plain password to the register function
+                        clearInput()
                         val intent = Intent(applicationContext, SignUpActivity2::class.java)
                         intent.putExtra("username", uname)
+                        intent.putExtra("email", email)
+                        intent.putExtra("password", pword)
                         startActivity(intent)
-                        clearInput()
                     }
                 }
             }
@@ -195,6 +202,92 @@ class SignUpActivity : AppCompatActivity() {
     private fun clearInput(){
         val textFields = listOf(emailAdd, username, password, conpassword)
         textFields.forEach { it.text.clear() }
+    }
+
+    private fun checkUserAvailability(username: String, email: String, callback: (Boolean) -> Unit) {
+        val url = baseUrl+"api/checkUser?USERNAME=$username&EMAIL=$email"
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace() // Handle network errors here
+                callback(false) // Assume failure means no duplicate, proceed with caution
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                // Check response code for success or conflict
+                val responseBody = response.body?.string() // Read the response body
+                Log.d("CheckUserAvailability", "Response Code: ${response.code}")
+                Log.d("CheckUserAvailability", "Response Body: $responseBody")
+                if (response.isSuccessful) {
+                    callback(true) // No duplicate, proceed
+                } else if (response.code == 409) {
+                    // Conflict, Username or Email already taken
+                    callback(false) // Duplicate exists, don't proceed
+                } else {
+                    callback(false) // Unexpected error
+                }
+            }
+        })
+    }
+
+    private fun registerUser(user: com.example.memoreal_prototype.models.User, password: String) {
+        val url = baseUrl + "api/addUser"
+
+        // Create a JSON object to send to the server
+        val json = JSONObject().apply {
+            put("FIRST_NAME", user.FIRST_NAME)
+            put("LAST_NAME", user.LAST_NAME)
+            put("MI", user.MI)
+            put("USERNAME", user.USERNAME)
+            put("CONTACT_NUMBER", user.CONTACT_NUMBER)
+            put("EMAIL", user.EMAIL)
+            put("BIRTHDATE", user.BIRTHDATE)
+            put("PICTURE", user.PICTURE)
+            put("PASSWORD", password)  // Include the plain text password
+        }.toString()
+
+        val requestBody = json.toRequestBody("application/json".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("RegisterUser", "Request failed: ${e.message}")
+                runOnUiThread {
+                    Toast.makeText(applicationContext, "Registration failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    // Show success message
+                    runOnUiThread {
+                        Toast.makeText(applicationContext, "User registered successfully", Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    // Parse the response to get the error message
+                    val errorBody = response.body?.string()
+                    val errorMessage = try {
+                        // Try to extract the "message" from the JSON response
+                        val jsonError = JSONObject(errorBody ?: "")
+                        jsonError.getString("message")
+                    } catch (e: Exception) {
+                        "Registration failed: Unknown error"
+                    }
+
+                    // Show the error message as a toast
+                    runOnUiThread {
+                        Toast.makeText(applicationContext, errorMessage, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
     }
 
     /*private fun initRecyclerView(){

@@ -1,4 +1,4 @@
-package com.example.memoreal_prototype.db
+package com.example.memoreal_prototype.room_db
 
 import android.content.Context
 import androidx.room.Database

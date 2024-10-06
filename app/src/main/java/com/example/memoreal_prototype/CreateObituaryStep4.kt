@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 
 class CreateObituaryStep4 : Fragment() {
 
@@ -27,7 +28,6 @@ class CreateObituaryStep4 : Fragment() {
         val obitText = view.findViewById<EditText>(R.id.etObituaryText)
         val keyEvents = view.findViewById<EditText>(R.id.etKeyEvents)
         val addMedia = view.findViewById<ImageView>(R.id.btnAddMedia)
-
 
         backButton.setOnClickListener {
             (activity as HomePageActivity).supportFragmentManager.beginTransaction()

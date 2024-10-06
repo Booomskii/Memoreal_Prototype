@@ -33,7 +33,7 @@ class CreateObituaryStep2_2 : Fragment() {
             Log.d("Step 2_2", "Plan: $plan")
         }
 
-        if (plan == "Basic Plan" || plan == "Premium Plan" || plan == "Lifetime"){
+        if (plan == "Basic Plan" || plan == "Premium Plan" || plan == "Lifetime Plan"){
             successMessage.text = getString(R.string.paymentSuccessMsg2)
         }
         else {

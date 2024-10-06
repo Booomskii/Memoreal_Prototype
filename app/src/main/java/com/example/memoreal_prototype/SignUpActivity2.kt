@@ -5,13 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,22 +15,31 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.example.memoreal_prototype.db.MemorealDatabase
-import com.example.memoreal_prototype.db.User
-import com.example.memoreal_prototype.db.UserViewModelFactory
-import kotlinx.coroutines.launch
+import com.example.memoreal_prototype.room_db.MemorealDatabase
+import com.example.memoreal_prototype.room_db.UserViewModelFactory
+import com.google.gson.Gson
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 import java.util.Calendar
 
 
 class SignUpActivity2 : AppCompatActivity() {
 
     private lateinit var uploadImg: ImageView
-    private var imageUri: Uri? = null
     private lateinit var image: String
     private lateinit var viewModel: UserViewModel
+
+    private var imageUri: Uri? = null
+    val client = UserSession.client
+    val baseUrl = UserSession.baseUrl
 
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {
         uri: Uri? ->
@@ -52,6 +57,8 @@ class SignUpActivity2 : AppCompatActivity() {
         setContentView(R.layout.activity_sign_up2)
 
         val username = intent.getStringExtra("username")
+        val password = intent.getStringExtra("password")
+        val email = intent.getStringExtra("email")
         val skip = findViewById<TextView>(R.id.textViewSkip)
         val cont = findViewById<Button>(R.id.btnContinue)
         val firstName = findViewById<EditText>(R.id.editTextFirstName)
@@ -113,50 +120,20 @@ class SignUpActivity2 : AppCompatActivity() {
             val bdate = birthDate.text.toString()
             val image = imageUri?.toString() ?: ""
 
-            Log.d("SignUpActivity2", "Starting validation")
+            // Validate inputs
             if (inputValidator(fname, lname, mi, bdate, contact, image)) {
-                Log.d("SignUpActivity2", "Input validated")
-                lifecycleScope.launch {
-                    try {
-                        Log.d("SignUpActivity2", "Attempting to fetch user by username: $username")
-                        val existingUser = dao.getUserByUsername(username!!.toString())
+                // Create a user object without the password
+                val user = com.example.memoreal_prototype.models.User(
+                    0, fname, lname, mi, username!!, contact, email!!,
+                    bdate, image, ""  // No hashed password needed here
+                )
 
-                        if (existingUser != null) {
-                            Log.d("SignUpActivity2", "User found, updating: ${existingUser.username}")
-
-                            viewModel.updateUser(
-                                User(
-                                    existingUser.userID,
-                                    fname,
-                                    lname,
-                                    mi,
-                                    username,
-                                    existingUser.password,
-                                    contact,
-                                    existingUser.email,
-                                    bdate,
-                                    image
-                                )
-                            )
-                            Log.d("SignUpActivity2", "User updated successfully")
-                        } else {
-                            Log.d("SignUpActivity2", "User not found!")
-                        }
-                    } catch (e: Exception) {
-                        Log.e("SignUpActivity2", "Error during update: ${e.message}")
-                    }
-                }
-                loginSuccess()
+                // Call the function to update user details, passing the plain password
+                registerUser2(user, password!!) // Pass the plain password
+                loginSuccess() // Proceed to the next activity
                 val intent = Intent(applicationContext, HomePageActivity::class.java)
-                Log.d("SignUpActivity2", "Navigating to HomePageActivity")
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
-            } else {
-                Log.d("SignUpActivity2", "Input validation failed")
-                Toast.makeText(
-                    this@SignUpActivity2,
-                    "There's something wrong",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         }
 
@@ -242,8 +219,66 @@ class SignUpActivity2 : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("userSession", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", true)
+        editor.putBoolean("isGuestUser", false)
         editor.putString("username", intent.getStringExtra("username"))
         editor.apply()
+    }
+
+    private fun registerUser2(user: com.example.memoreal_prototype.models.User, password: String) {
+        val username = intent.getStringExtra("username")
+        val url = baseUrl + "api/updateUser/$username"
+
+        // Create a JSON object to send to the server
+        val json = JSONObject().apply {
+            put("FIRST_NAME", user.FIRST_NAME)
+            put("LAST_NAME", user.LAST_NAME)
+            put("MI", user.MI)
+            put("USERNAME", user.USERNAME)
+            put("CONTACT_NUMBER", user.CONTACT_NUMBER)
+            put("EMAIL", user.EMAIL)
+            put("BIRTHDATE", user.BIRTHDATE)
+            put("PICTURE", user.PICTURE)
+            put("PASSWORD", password)  // Include the plain text password
+        }.toString()
+
+        val requestBody = json.toRequestBody("application/json".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url(url)
+            .put(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("UpdateUserDetails", "Request failed: ${e.message}")
+                runOnUiThread {
+                    Toast.makeText(applicationContext, "Update failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    // Show success message
+                    runOnUiThread {
+                        Toast.makeText(applicationContext, "User info updated successfully", Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    // Parse the response to get the error message
+                    val errorBody = response.body?.string()
+                    val errorMessage = try {
+                        // Try to extract the "message" from the JSON response
+                        val jsonError = JSONObject(errorBody ?: "")
+                        jsonError.getString("message")
+                    } catch (e: Exception) {
+                        "Update failed: Unknown error"
+                    }
+
+                    // Show the error message as a toast
+                    runOnUiThread {
+                        Toast.makeText(applicationContext, errorMessage, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
     }
 
     override fun onBackPressed() {

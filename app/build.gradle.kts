@@ -55,6 +55,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
+    implementation("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation("com.google.code.gson:gson:2.8.9")
 
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")

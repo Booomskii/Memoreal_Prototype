@@ -52,7 +52,6 @@ class CreateObituaryStep2 : Fragment() {
             Log.d("NextFragment", "RadioButton4: $isRadioButton4Checked")
         }
 
-        val isRadioButton1Checked = arguments?.getBoolean("isRadioButton1Checked") ?: false
         val isRadioButton2Checked = arguments?.getBoolean("isRadioButton2Checked") ?: false
         val isRadioButton3Checked = arguments?.getBoolean("isRadioButton3Checked") ?: false
         val isRadioButton4Checked = arguments?.getBoolean("isRadioButton4Checked") ?: false
@@ -93,25 +92,16 @@ class CreateObituaryStep2 : Fragment() {
         }
 
         payNow.setOnClickListener {
-            val createObituaryStep2_2 = CreateObituaryStep2_2()
-            createObituaryStep2_2.arguments = bundle
+            val createObituaryStep22 = CreateObituaryStep2_2()
+            createObituaryStep22.arguments = bundle
 
             (activity as HomePageActivity).supportFragmentManager.beginTransaction()
-                .replace(R.id.frame_layout, CreateObituaryStep2_2())
+                .replace(R.id.frame_layout, createObituaryStep22)
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_out_left, R.anim.slide_out_right)
                 .addToBackStack("CreateObituaryStep2")
                 .commit()
         }
 
-        /*requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            (activity as HomePageActivity).supportFragmentManager.beginTransaction()
-                .replace(R.id.frame_layout, CreateObituaryStep1())
-                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_out_left, R.anim.slide_out_right)
-                .addToBackStack(null)
-                .commit()
-        }*/
-
-        // Access Home Page Activity and show bottom navigation
         (activity as HomePageActivity).showBottomNavigation()
 
         return view

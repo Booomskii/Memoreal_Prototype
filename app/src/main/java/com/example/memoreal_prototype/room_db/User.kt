@@ -1,4 +1,4 @@
-package com.example.memoreal_prototype.db
+package com.example.memoreal_prototype.room_db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -31,7 +31,9 @@ data class User(
     @ColumnInfo(name="birthdate")
     var birthDate:String? = null,
     @ColumnInfo(name="picture")
-    var picture:String? = null
+    var picture:String? = null,
+    val hashedPassword: String,
+    val salt: String
 )
 
 @Entity(

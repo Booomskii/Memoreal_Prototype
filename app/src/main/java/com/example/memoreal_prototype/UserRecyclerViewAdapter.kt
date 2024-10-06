@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.memoreal_prototype.db.User
+import com.example.memoreal_prototype.room_db.User
 
 class UserRecyclerViewAdapter:RecyclerView.Adapter<UserViewHolder>() {
 

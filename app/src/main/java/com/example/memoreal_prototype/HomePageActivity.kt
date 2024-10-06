@@ -60,14 +60,7 @@ class HomePageActivity : UserSession() {
                 .setTitle("Logout")
                 .setMessage("Are you sure you want to logout?")
                 .setPositiveButton("Yes") { _, _ ->
-                    val sharedPreferences = getSharedPreferences("userSession", MODE_PRIVATE)
-                    val editor = sharedPreferences.edit()
-                    editor.clear()
-                    editor.apply()
-
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                    logOut()
                 }
                 .setNegativeButton("No", null)
                 .show()
